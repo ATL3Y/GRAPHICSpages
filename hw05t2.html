@@ -1,0 +1,99 @@
+
+<body bgcolor=Thistle>
+      <h1 style="font-family: Arial"><center>Catch the Cube</center></h1>
+<center>
+<td><canvas id='canvas2' width=500 height=500></canvas></td>
+</center>
+</body>
+<script src='drawlib2.js'></script>
+
+<script>
+   var canvas = initCanvas('canvas2');
+   canvas.update = function(g) {
+      g.strokeStyle = 'Crimson';
+      g.beginPath();
+      g.moveTo(0,0);
+      g.lineTo(this.width,0);
+      g.lineTo(this.width,this.height);
+      g.lineTo(0,this.height);
+      g.lineTo(0,0);
+      g.stroke();
+
+      var c1 = new Cube(.05*-this.cursor.y,0,0,.4);
+      var c2 = new Cube(0,0,this.cursor.y / 100,1);
+      var c3 = new Cube(this.cursor.y / 100,-2.5,-.5,.2);
+      var c4 = new Cube(0,.01*this.cursor.y,0,.1);
+
+      var m1 = new Matrix();
+      var m11 = new Matrix();
+      var m12 = new Matrix();
+      var m13 = new Matrix();
+      var m14 = new Matrix();
+
+      var m2 = new Matrix();
+      var m21 = new Matrix();
+      var m22 = new Matrix();
+      var m23 = new Matrix();
+      var m24 = new Matrix();
+
+      var m3 = new Matrix();
+      var m31 = new Matrix();
+      var m32 = new Matrix();
+      var m33 = new Matrix();
+      var m34 = new Matrix();
+
+      var m4 = new Matrix();
+      var m41 = new Matrix();
+      var m42 = new Matrix();
+      var m43 = new Matrix();
+      var m44 = new Matrix();
+
+      g.strokeStyle = 'Aquamarine';
+      m1.scale(Math.sin(time),Math.cos(time),Math.sin(time));
+      m1.assignM(m11);
+      m11.rotateX(Math.sin(time));
+      m11.transformM(m1,m12);
+      m12.rotateY(Math.cos(time));
+      m12.transformM(m1,m13);
+      m13.rotateZ(Math.sin(time));
+      m13.transformM(m1,m14);
+      m14.assignM(m1);
+      c1.draw(g, m1); 
+
+      g.strokeStyle = 'Black';
+      m2.assignM(m21);
+      m2.rotateX(Math.sin(time));
+      m21.rotateY(Math.cos(time));
+      m21.transformM(m2,m22);
+      m22.assignM(m2);
+      m22.assignM(m23);
+      m23.rotateZ(Math.cos(time) / 10);
+      m23.transformM(m2,m24);
+      m24.assignM(m2);
+      c2.draw(g, m2); 
+
+      g.strokeStyle = 'White';
+      m3.scale(5,.25,1);
+      m3.assignM(m31);
+      m31.rotateX(Math.sin(time));
+      m31.transformM(m3,m32);
+      m32.rotateY(Math.cos(time));
+      m32.transformM(m3,m33);
+      m33.rotateZ(Math.sin(time));
+      m33.transformM(m3,m34);
+      m34.assignM(m3);
+      c3.draw(g, m3); 
+
+      g.strokeStyle = 'Peru';
+      m4.translate(Math.sin(time),-Math.tan(time),1);
+      m4.assignM(m41);
+      m41.rotateX(Math.sin(time));
+      m41.transformM(m4,m42);
+      m42.rotateY(Math.sin(time));
+      m42.transformM(m4,m43);
+      m43.assignM(m4);
+      c4.draw(g, m4);
+   }
+</script>
+
+
