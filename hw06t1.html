@@ -1,0 +1,74 @@
+
+<body bgcolor='Black'>
+      <h1 style="font-family:Arial; color:white"><center>bouncy</center></h1>
+<center>
+<td><canvas id='canvas1' width=500 height=500></canvas></td>
+</center>
+</body>
+<script src='drawlib3.js'></script>
+
+<script>
+   var canvas = initCanvas('canvas1');
+
+   canvas.update = function(g) {
+      var grd = g.createLinearGradient(0,0,200,0);
+      grd.addColorStop(0,'Aquamarine');
+      grd.addColorStop(1,"rgb(136,12,136)");
+
+      g.strokeStyle = grd;
+      g.beginPath();
+      g.moveTo(0,0);
+      g.lineTo(this.width,0);
+      g.lineTo(this.width,this.height);
+      g.lineTo(0,this.height);
+      g.lineTo(0,0);
+      g.lineWidth = 5;
+      g.stroke();
+
+      var grd2 = g.createLinearGradient(0,0,200,0);
+      grd2.addColorStop(0,"rgb(255,30,74)");
+      grd2.addColorStop(1,"rgb(136,95,95)");
+
+      g.fillStyle = grd2;
+      g.fillRect(0+2,0+2,this.width-4, this.height-4);
+
+      //DRAW SHAPES
+      g.lineWidth = .5;
+      var c1 = new Cube(1,1,1,1);
+      g.strokeStyle = 'Aquamarine';
+      var m1 = new Matrix();
+      m1.scale(Math.sin(time),Math.cos(time),Math.sin(time));
+      m1.rotateX(Math.sin(time));
+      m1.rotateY(Math.cos(time));
+      c1.draw(g, m1); 
+
+      var s1 = new Surface(10); 
+      g.strokeStyle = 'White';
+      var m2 = new Matrix();
+      m2.translate(0,0,01);
+      m2.rotateX(Math.sin(time));
+      m2.rotateY(Math.cos(time));
+      m2.rotateZ(Math.tan(time));
+      s1.cylinder();
+      s1.draw(g, m2); 
+
+      var s2 = new Surface(10);
+      g.strokeStyle = "rgb(255,30,74)";
+      var m3 = new Matrix();
+      m3.translate(.2,.2,1);
+      m3.rotateX(Math.sin(time));
+      s2.sphere();
+      s2.draw(g,m3);
+      
+      var s3 = new Surface(20);
+      g.strokeStyle = 'Black';
+      s3.superQuadric();
+      m3.translate(-.4,-.4,-1);
+      m3.rotateX(Math.cos(time));
+      m3.rotateY(Math.sin(time));
+      m3.rotateZ(Math.cos(time));
+      s3.draw(g,m3);
+   }
+</script>
+
+
