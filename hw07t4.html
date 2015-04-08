@@ -1,0 +1,70 @@
+<body bgcolor='Black'>
+      <h1 style="font-family:Arial; color:white"><center>school</center></h1>
+<center>
+<td><canvas id='canvas1' width=500 height=500></canvas></td>
+</center>
+<h3 style="font-family:Arial; color:rgb(136,12,136)"><center>bezier splines</center></h3>
+</body>
+<script src='drawlib7t4.js'></script>
+
+<script>
+   var canvas = initCanvas('canvas1');
+
+   canvas.update = function(g) {
+      var grd = g.createLinearGradient(0,0,200,0);
+      grd.addColorStop(0,'Aquamarine');
+      grd.addColorStop(1,"rgb(136,12,136)");
+
+      g.strokeStyle = grd;
+      g.beginPath();
+      g.moveTo(0,0);
+      g.lineTo(this.width,0);
+      g.lineTo(this.width,this.height);
+      g.lineTo(0,this.height);
+      g.lineTo(0,0);
+      g.lineWidth = 10;
+      g.stroke();
+
+      var grd2 = g.createLinearGradient(0,0,75,350);
+      grd2.addColorStop(0,"rgb(0,90,205)");
+      grd2.addColorStop(1,"rgb(30,30,30)");
+
+      g.fillStyle = grd2;
+      g.fillRect(0+2,0+2,this.width-4, this.height-4);
+
+      var bMat = new Matrix();
+      bMat.data = [-1,3,-3,1,3,-6,3,0,-3,3,0,0,1,0,0,0];
+
+      //DRAW HSPLINE
+      g.lineWidth = .05;
+      var grd3 = g.createLinearGradient(400,0,0,0);
+      grd3.addColorStop(0,"rgb(136,12,136)");
+      grd3.addColorStop(1,'Aquamarine');
+      g.strokeStyle = grd3;
+      var p0 = new Vector3(-.01,0,0);
+      var r0 = new Vector3(0,.01,0);
+      var r1 = new Vector3(0,-.01,0);
+      var p1 = new Vector3(.01,.01,0);
+      var m1 = new Matrix();
+      m1.translate(-.9,0,0);
+      m1.rotateY(Math.PI/4);
+      for(var i = 0; i < 20; i++) {
+            var b1 = new Spline(p0,r0,r1,p1,bMat);
+            b1.draw(g, m1);
+            m1.rotateX(Math.PI);
+            b1.draw(g, m1);
+            m1.translate(p0.x-p1.x,p0.y-p1.y,0);
+            b1.draw(g, m1);
+            m1.rotateX(Math.PI);
+            b1.draw(g, m1);
+            m1.translate(-2*(p0.x-p1.x),-2*(p0.y-p1.y),0);
+            b1.draw(g, m1);
+            m1.rotateX(Math.PI);
+            b1.draw(g, m1);
+            m1.scale(1.5,1.62*Math.sin((this.cursor.y + this.cursor.x)/150),0);
+            b1.draw(g, m1);
+      }
+}
+</script>
+
+
