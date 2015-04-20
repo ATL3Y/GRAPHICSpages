@@ -1,0 +1,148 @@
+<body bgcolor='#FFDDFF'>
+      <h1 style="font-family:Arial; color:#55EEEE"><center>my home planet</center></h1>
+<script src=three.js></script>
+
+<div id='SimpleScene_code'>
+<script>
+window.time = 0;
+window.SimpleScene = function() {
+  this.init = function(name) {
+     this.scene = new THREE.Scene();
+     this.scene.fog = new THREE.FogExp2( 0xFFFFDD, .035);
+
+     var camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+     camera.position.z = 25;
+     this.scene.add(camera);
+
+     var renderer = new THREE.WebGLRenderer( { alpha: true } );
+     renderer.setSize(700, 700);
+     document.getElementById(name).appendChild(renderer.domElement);
+
+     this.setup();
+
+     var that = this;
+     (function tick() {
+        time = (new Date().getTime()) / 1000;
+        that.update();
+        renderer.render(that.scene, camera);
+        requestAnimationFrame(tick);
+     })();
+  }
+};
+</script>
+
+<center><div id='Scene1_id'></div></center>
+<div id='Scene1_code'>
+<script>
+
+function Scene1() {
+   var sphere, joint, sphere2, joint2, sphere3, joint3, sphere4, joint4, sphere5, plane;
+
+   this.setup = function() {
+   	var light = new THREE.DirectionalLight(0xBBBBBB);
+   	light.position.set(1,1,1).normalize();
+   	this.scene.add(light);
+
+    var ambientLight = new THREE.AmbientLight(0x0C0C0C);
+    this.scene.add(ambientLight);
+
+    var spotLight = new THREE.SpotLight(0xFFFFFF);
+    spotLight.position.set(-40, 60, -10);
+    spotLight.castShadow = true;
+    this.scene.add(spotLight);
+
+    var planeGeometry = new THREE.PlaneGeometry(6, 2080, 1, 1);
+    var planeMaterial = new THREE.MeshPhongMaterial({color: 0x0099FF, emissive: 0x991100, specular: 0x001100, shininess: 25});
+    plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane.receiveShadow = true;
+    plane.rotation.x = -0.4455 * Math.PI;
+    plane.rotation.z = 0.068 * Math.PI;
+    plane.position.z = -999;
+    plane.position.x = -220;
+    plane.position.y = 168;
+    this.scene.add(plane);
+
+    var planeGeometry2 = new THREE.PlaneGeometry(15, 5000, 1, 1);
+    var planeMaterial2 = new THREE.MeshPhongMaterial({color: 0x333333, emissive: 0x3333FF, specular: 0x000000, shininess: 0});
+    plane2 = new THREE.Mesh(planeGeometry2, planeMaterial2);
+    plane2.receiveShadow = true;
+    plane2.rotation.x = -0.4455 * Math.PI;
+    plane2.rotation.z = 0.89 * Math.PI;
+    plane2.position.z = -939;
+    plane2.position.x = 300;
+    plane2.position.y = 148;
+    this.scene.add(plane2);
+
+   	var geometry = new THREE.SphereGeometry(5, 50, 25); 
+   	var material = new THREE.MeshLambertMaterial({color: 0x66FFFF, emissive: 0x004477, wrapRGB: (.3, .5, 1), wireframe: true});
+   	var material2 = new THREE.MeshPhongMaterial({color: 0xCC0066, emissive: 0x1111AA, specular: 0x001100, shininess: 5});
+   	var material3 = new THREE.MeshPhongMaterial({color: 0x00CC00, emissive: 0x0055AA, specular: 0x001100, shininess: 5});
+   	var material4 = new THREE.MeshPhongMaterial({color: 0x999900, emissive: 0xDD0011, specular: 0x001100, shininess: 5});
+   	var material5 = new THREE.MeshPhongMaterial({color: 0x66DD00, emissive: 0x770077, specular: 0x001100, shininess: 5});
+
+   	sphere = new THREE.Mesh(geometry, material);
+   	joint = new THREE.Mesh();
+   	sphere2 = new THREE.Mesh(new THREE.SphereGeometry(.1, 20, 10), material2);
+   	joint2 = new THREE.Mesh();
+   	sphere3 = new THREE.Mesh(new THREE.SphereGeometry(.2, 20, 10), material3);
+   	joint3 = new THREE.Mesh();
+   	sphere4 = new THREE.Mesh(new THREE.SphereGeometry(.35, 20, 10), material4);
+   	joint4 = new THREE.Mesh();
+   	sphere5 = new THREE.Mesh(new THREE.SphereGeometry(.5, 20, 10), material5);
+
+   	this.scene.add(sphere);
+   	sphere.add(joint);
+   	joint.add(sphere2);
+   	sphere2.add(joint2);
+   	joint2.add(sphere3);
+   	sphere.add(joint3);
+   	joint3.add(sphere4);
+   	sphere.add(joint4);
+   	joint4.add(sphere5);
+   }
+
+   this.update = function() {
+   	sphere.rotation.x += 0.005;
+   	sphere.rotation.y += 0.01;
+
+   	joint.position.y = Math.sin(time);
+   	joint.rotation.y = time;
+
+   	sphere2.position.set(.5,.5,.5);
+   	sphere2.rotation.x = time;
+
+   	joint2.position.y = .5;
+   	joint2.rotation.y = time;
+
+   	sphere3.position.set(.6,.6,.6);
+   	sphere3.rotation.x = time;
+
+   	joint3.position.y = .4;
+   	joint3.rotation.y = time/2;
+
+   	sphere4.position.set(.9,.9,.9);
+   	sphere4.rotation.x = time/2;
+
+   	joint4.position.y = .6;
+   	joint4.rotation.y = time/3;
+
+   	sphere5.position.set(1.2,1.2,1.2);
+   	sphere5.rotation.x = time/3;
+
+   	sphere.scale.set(1.5,1.5,1.5);
+   	sphere2.scale.set(1.5,1.5,1.5);
+   	sphere3.scale.set(1.5,1.5,1.5);
+   	sphere4.scale.set(1.5,1.5,1.5);
+   	sphere5.scale.set(1.5,1.5,1.5);
+
+   }
+}
+Scene1.prototype = new SimpleScene;
+new Scene1().init('Scene1_id');
+
+</script>
+</div>
+<h5 style="font-family:Arial; color:#55EEEE"><center>far away, hidden by fog, porous, containing worlds</center></h5>
+</body>
+
+
