@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!--<script type="text/javascript" src="underscore.js"></script>-->
+<script src="three.js"></script>
+<script type="text/javascript" src="three.min.js"></script>
+<!--<script type="text/javascript" src="TrackballControls.js"></script>
+<script type="text/javascript" src="KeyboardState.js"></script>-->
+<!--<script type="text/javascript" src="ThreeOctree.js"></script>-->
+<!--<script type="text/javascript" src="jshashtable-2.1.js"></script>-->
+<!--<script type="text/javascript" src="stats.js"></script>-->
+<!--<script type="text/javascript" src="dat.gui.min.js"></script>-->
+<!--<script type="text/javascript" src="Detector.js"></script>-->
+
+<!--<script type="text/javascript" src="ImprovedNoise.js"></script>-->
+<script type="text/javascript" src="boidObj.js"></script>
+<script type="text/javascript" src="clouds3.js"></script>
+
+<body style='margin:0px; bgcolor:#FFDDFF; overflow:hidden;'> 
+    <h1 style="font-family:Arial; color:#55EEEE"><center>TEST 6</center></h1> <!--ok?-->
+    <p align="left" style="font-family:Arial; font-size:70%; color:#999999; margin-right: 50px; margin-left: 50px">DIRECTIONS: Move mouse to view scene. Refresh to change bird color. PROBLEMS SOLVED: 1. I added multiple objects to the scene. 2. I implemented a rendering function that uses an array, even though now I know I don't need it. 3. I integrated mouse perspective control and organized my boid, terrain, and sky code in separate scripts. 4. For the "sky", I wrapped a value noise data texture around a plane. 5. For the boid, I randomized color and computed centroids to make an octree for a future flock. UNSOLVED PROBLEMS: 1. Make the clouds look like clouds. 2. Make the sky a dome.<p>
+
+<script>
+    // RENDERER
+    var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true}); //alpha?
+    renderer.setSize(window.innerWidth, window.innerHeight); //constants off fill screen?
+    document.body.appendChild(renderer.domElement);
+    var onRenderFcts = [];
+
+    // GLOBAL VARIABLES
+    var scene, camera, renderer;
+
+    // 3D OBJECTS
+    var boid, lines, terrain, sky;
+
+    // CREATE SCENE
+    var scene = new THREE.Scene();
+
+    // CAMERA
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 2000);
+    camera.position.z = 3;
+
+    // CHARACTER - BOID
+    var geo = new BoidObj();
+    var mat = new THREE.MeshBasicMaterial({color:Math.random()*0xFFFFFF, side: THREE.DoubleSide})
+    geo.dynamic = true;
+    boid = new THREE.Mesh(geo, mat);
+    boid.phase = Math.floor(Math.random()*62.83);
+    var rotMatrix = new THREE.Matrix4();
+    boid.scale = new THREE.Vector3(.1,.1,.1);
+    boid.position = new THREE.Vector3(0,0,0); //pass in later
+    boid.rotation = new THREE.Vector3(0,0,0); // pass in later
+    scene.add(boid);
+
+    // CHARACTER - LINE
+    var mat = new THREE.LineDashedMaterial({color: 0x0CFFFF, linewidth: .5});
+    var geo = new THREE.Geometry();
+    geo.vertices.push(new THREE.Vector3(0,0,0));
+    geo.vertices.push(new THREE.Vector3(1,1,0));
+    geo.dynamic = true;
+    lines = new THREE.Line(geo, mat);
+    scene.add(lines);
+
+    // TERRAIN
+    var geo = new THREE.PlaneGeometry( 1000, 1000, 30 );
+    // var geo = new THREE.PlaneBufferGeometry(6000, 6000, 256, 256); //why isn't this working?
+    var mat = new THREE.MeshPhongMaterial({color: 0x333333});
+    terrain = new THREE.Mesh(geo, mat);
+    terrain.position.set(0, -10, 0);
+    terrain.rotation.x = -Math.PI/2;
+    scene.add(terrain);
+
+    // SKY
+    sky = clouds3();
+    scene.add(sky);
+
+    // MOUSE
+    var mouse = {x: 0, y: 0};
+    document.addEventListener('mousemove', function(event){
+        mouse.x = (event.clientX / window.innerWidth) - 0.5;
+        mouse.y = (event.clientY / window.innerHeight) - 0.5;
+    }, false);
+
+    var controlsEnabled = true;
+
+    onRenderFcts.push(function(delta, now){
+        if(controlsEnabled === false) return;
+        camera.position.x += (mouse.x*5 - camera.position.x) * (delta*3);
+        camera.position.y += (mouse.y*5 - camera.position.y) * (delta*3);
+        camera.lookAt(scene.position);
+    });
+
+    renderer.domElement.addEventListener('click', function(event){
+        controlsEnabled = controlsEnabled === true ? false : true}, false);
+
+    //set 3 point lighting
+    var light = new THREE.DirectionalLight(0x333333);
+    light.position.set(1,1,1).normalize();
+    scene.add(light);
+
+    var ambientLight = new THREE.AmbientLight(0x0C0C0C); // could all light var just be "light"?
+    scene.add(ambientLight); 
+
+    var spotLight = new THREE.SpotLight(0x777777);
+    spotLight.position.set(-40, 60, -10);
+    spotLight.castShadow = true;
+    scene.add(spotLight);
+
+    scene.fog = new THREE.FogExp2( 0xFFFFDD, .035);
+
+    // onRenderFcts.push(function(delta, now){ //need to separate? list syntax?
+    //     light
+    //     // ambientLight,
+    //     // spotLight
+    // }
+
+        //render the scene
+    onRenderFcts.push(function(){
+        renderer.render(scene, camera);
+    })
+
+    //loop to animate
+    var lastTime = null;
+    requestAnimationFrame(function animate(now){
+        requestAnimationFrame(animate);
+        lastTime = lastTime || now-1000/60;
+        var delta = Math.min(200, now - lastTime);
+        lastTime = now;
+        onRenderFcts.forEach(function(onRenderFct){
+            onRenderFct(delta/1000, now/1000);
+        })
+    })
+
+
+    // var buildBoid(function{
+    //     var geo = new BoidObj();
+    //     var material = new THREE.MeshBasicMaterial({color:Math.random()*0xFFFFFF, side: THREE.DoubleSide})
+    //     geo.dynamic = true;
+    //     boid = new THREE.Mesh(geo, material);
+    //     boid.phase = Math.floor(Math.random()*62.83);
+    //     var rotMatrix = new THREE.Matrix4();
+    //     boid.scale = new THREE.Vector3(.1,.1,.1);
+    //     boid.position = new THREE.Vector3(0,0,0); //pass in later
+    //     boid.rotation = new THREE.Vector3(0,0,0); // pass in later
+    //     return boid;
+    // })();
+
+    // var buildLines = (function(){
+    //     var material = new THREE.LineBasicMaterial({color: 0x0CFFFF, linewidth: 5});
+    //     var geo = new THREE.Geometry();
+    //     geo.vertices.push(new THREE.Vector3(0,0,0));
+    //     geo.vertices.push(new THREE.Vector3(1,1,0));
+    //     geo.dynamic = true;
+    //     lines = new THREE.Line(geo, material);
+    //     return lines;
+    // })();
+
+    // var buildTerrain = (function(){
+    //     // var texture = THREE.ImageUtils.loadTexture( 'ground1.png', null, animate ); 
+    //     // var terrain = new THREE.Mesh(geometry, 'ground1.png'); //prob need node - do later
+    //     var geo = new THREE.PlaneBufferGeometry(6000, 6000, 256, 256);
+    //     terrain = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({color: 0x999999, wireframe: true}));
+    //     terrain.position.set(0, -12, 0);
+    //     //terrain.rotation.set = (0,-Math.PI/2,0);
+    //     return terrain;
+    // })() 
+
+</script>
+</div>
+</body>
+
+
+

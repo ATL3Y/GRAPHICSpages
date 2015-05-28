@@ -1,0 +1,96 @@
+<body bgcolor='#FFDDFF'>
+      <h1 style="font-family:Arial; color:#55EEEE"><center>TEST 1</center></h1>
+      <p align="left" style="font-family:Arial; font-size:70%; color:#999999; margin-right: 50px; margin-left: 50px">THE GOAL: This is the beginning of many steps on my way to making birds flying beneath clouds and over terrain. PROBLEMS SOLVED: 1. I learned it'd be better to start making wings with lines.<p>
+<script src=three.js></script>
+
+<div id='SimpleScene_code'>
+<script>
+window.time = 0;
+window.SimpleScene = function() {
+  this.init = function(name) {
+     this.scene = new THREE.Scene();
+     //this.scene.fog = new THREE.FogExp2( 0xFFFFDD, .035);
+
+     var camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
+     camera.position.z = 25;
+     this.scene.add(camera);
+
+     var renderer = new THREE.WebGLRenderer( { alpha: true } );
+     renderer.setSize(700, 700);
+     document.getElementById(name).appendChild(renderer.domElement);
+
+     this.setup();
+
+     var that = this;
+     (function tick() {
+        time = (new Date().getTime()) / 1000;
+        that.update();
+        renderer.render(that.scene, camera);
+        requestAnimationFrame(tick);
+     })();
+  }
+};
+</script>
+
+<center><div id='Scene1_id'></div></center>
+<div id='Scene1_code'>
+<script>
+
+function Scene1() {
+  var mesh;
+
+   this.setup = function() {
+   	var light = new THREE.DirectionalLight(0xBBBBBB);
+   	light.position.set(1,1,1).normalize();
+   	this.scene.add(light);
+
+    var ambientLight = new THREE.AmbientLight(0x0C0C0C);
+    this.scene.add(ambientLight);
+
+    var spotLight = new THREE.SpotLight(0xFFFFFF);
+    spotLight.position.set(-40, 60, -10);
+    spotLight.castShadow = true;
+    this.scene.add(spotLight);
+
+    var v1 = new THREE.Vector3(0,0,0);
+    var v2 = new THREE.Vector3(2,1,1);
+    var v3 = new THREE.Vector3(2,2,0);
+
+    var vertices = [v1, v2, v3];
+    var holes = [];
+    var triangles, mesh;
+    var geometry = new THREE.Geometry();
+    var material = new THREE.MeshBasicMaterial();
+
+    geometry.vertices = vertices;
+
+    triangles = THREE.Shape.Utils.triangulateShape ( vertices, holes );
+
+    for( var i = 0; i < triangles.length; i++ ){
+      geometry.faces.push( new THREE.Face3( triangles[i][0], triangles[i][1], triangles[i][2] ));
+    }
+
+    mesh = new THREE.Mesh( geometry, material );
+    this.scene.add(mesh);
+    
+   }
+
+   this.update = function() {
+    // mesh.geometry.vertices[1].y = Math.sin(time);
+    // mesh.geometry.vertices[2].y = Math.sin(time);
+    // mesh.geometry.verticesNeedUpdate = true;
+    // with these, getting error: Uncaught TypeError: Cannot read property 'geometry' of undefined
+
+   }
+}
+Scene1.prototype = new SimpleScene;
+new Scene1().init('Scene1_id');
+
+</script>
+</div>
+<h5 style="font-family:Arial; color:#55EEEE"><center>wing using THREE.Shape.Utils.triangulateShape</center></h5>
+<h5 style="font-family:Arial; color:#55EEEE"><center>problem: intersecting vertices along z axis and difficulty linking joint to vertice</center></h5>
+</body>
+
+
+

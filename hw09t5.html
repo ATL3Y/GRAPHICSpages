@@ -1,0 +1,75 @@
+<body bgcolor='Black'>
+      <h1 style="font-family:Arial; color:#55EEEE"><center>TEST 5</center></h1> 
+      <p align="left" style="font-family:Arial; font-size:70%; color:#999999; margin-right: 50px; margin-left: 50px">PROBLEMS SOLVED: 1. I made birds fly in canvas using the class notes and writing a "draw mirror line to" function to easily draw both sides of the bird with one function call in my canvas. 2. I wrote a function to randomize color and ways to manipulate this. PROBLEMS UNSOLVED: 1. For a flock, I will need to work with position depth. I'd also like to work more easily with 3D shapes, so I will move to webGL.<p>
+<center>
+<td><canvas id='canvas1' width=500 height=500></canvas></td>
+</center>
+</body>
+<script src='drawlib7t5.js'></script>
+
+<script>
+
+var canvas = initCanvas('canvas1');
+var color2 = getRandomColor();
+var color3 = getRandomColor();
+var color4 = getRandomColor();
+var color5 = getRandomColor();
+var color6 = getRandomColor();
+var color7 = getRandomColor();
+
+canvas.update = function(g) {
+      var grd = g.createLinearGradient(0,300,0,0);
+      grd.addColorStop(0,"rgb(136,136,136)");
+      grd.addColorStop(1,'rgb(0,120,255)');
+
+      g.strokeStyle = grd;
+      g.beginPath();
+      g.moveTo(0,0);
+      g.lineTo(this.width,0);
+      g.lineTo(this.width,this.height);
+      g.lineTo(0,this.height);
+      g.lineTo(0,0);
+      g.lineWidth = 5;
+      g.stroke();
+
+      var grd2 = g.createLinearGradient(0,0,0,600);
+      grd2.addColorStop(0,"rgb(40,0,70)");
+      grd2.addColorStop(1,"rgb(255,190,245)");
+
+      g.fillStyle = grd2;
+      g.fillRect(0+2,0+2,this.width-4, this.height-4);
+
+      //translation distance is based on scale
+      var b7 = new Boid(1, .15, 5, -1.8);
+      g.strokeStyle = color7;
+      b7.draw(g);
+
+      var b6 = new Boid(1, .15, -5, -1.8);
+      g.strokeStyle = color6;
+      b6.draw(g);
+
+      var b5 = new Boid(5, .3, 2, -.7);
+      g.strokeStyle = color5;
+      b5.draw(g);
+
+      var b4 = new Boid(5, .3, -2, -.7);
+      g.strokeStyle = color4;
+      b4.draw(g);
+
+      var b3 = new Boid(10, .75, .5, -.17);
+      g.strokeStyle = color3;
+      b3.draw(g);
+
+      var b2 = new Boid(10, .75, -.5, -.17);
+      g.strokeStyle = color2;
+      b2.draw(g);
+
+      var b1 = new Boid(20, 1.3, 0, 0);
+      var color1 = getRandomColor();
+      g.strokeStyle = color1;
+      b1.draw(g);
+
+      }
+</script>
+
+
